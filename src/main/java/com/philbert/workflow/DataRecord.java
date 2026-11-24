@@ -23,16 +23,16 @@ public class DataRecord {
         return type;
     }
 
-    public Object get(String field) {
+    public synchronized Object get(String field) {
         return fields.get(field);
     }
 
-    public void set(String field, Object value) {
+    public synchronized void set(String field, Object value) {
         fields.put(requireText(field, "field"), value);
     }
 
-    public Map<String, Object> getFields() {
-        return Collections.unmodifiableMap(fields);
+    public synchronized Map<String, Object> getFields() {
+        return Collections.unmodifiableMap(new HashMap<>(fields));
     }
 
     private static String requireText(String value, String name) {

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,20 @@ class RecordStoreTest {
     @Test
     void rejectsNullRecord() {
         assertThrows(IllegalArgumentException.class, () -> store.add(null));
+    }
+
+    @Test
+    void updateChangesTheStoredRecord() {
+        store.add(new DataRecord("sale-1", "Sale"));
+
+        store.update("sale-1", record -> record.set("status", "APPROVED"));
+
+        assertEquals("APPROVED", store.findById("sale-1").orElseThrow().get("status"));
+    }
+
+    @Test
+    void updateOfUnknownRecordFails() {
+        assertThrows(NoSuchElementException.class, () -> store.update("missing", record -> { }));
     }
 
     @Test

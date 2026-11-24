@@ -1,8 +1,10 @@
 package com.philbert.workflow;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 
 public class RecordStore {
 
@@ -24,6 +26,14 @@ public class RecordStore {
             return Optional.empty();
         }
         return Optional.ofNullable(records.get(id));
+    }
+
+    public void update(String id, Consumer<DataRecord> change) {
+        DataRecord record = findById(id)
+                .orElseThrow(() -> new NoSuchElementException("no record with id: " + id));
+        synchronized (record) {
+            change.accept(record);
+        }
     }
 
     public int size() {
